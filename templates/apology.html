@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title %}Error {{ top }}{% endblock %}
+
+{% block main %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 text-center">
+        <div class="card shadow-sm border-danger border-2">
+            <div class="card-body p-4">
+                <h1 class="display-4 text-danger fw-bold">{{ top }}</h1>
+                <h4 class="card-title mb-3">Ocurrió un inconveniente</h4>
+                <p class="card-text text-muted fs-5">{{ message }}</p>
+                <a href="javascript:history.back()" class="btn btn-outline-secondary mt-3">Volver atrás</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

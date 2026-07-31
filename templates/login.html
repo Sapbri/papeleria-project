@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Iniciar Sesión
+{% endblock %}
+
+{% block main %}
+    <div class="row justify-content-center mt-5">
+        <div class="col-11 col-md-6 col-lg-4">
+            <div class="card bg-light border-secondary border-2 shadow-sm rounded-3">
+                <div class="card-body p-4 text-center">
+                
+                    <h3 class="card-title mb-4 fw-bold text-secondary">Iniciar Sesión</h3>
+
+                    <form action="/login" method="post">
+                        <div class="mb-3">
+                            <input autocomplete="off" autofocus class="form-control border-secondary-subtle" name="username" placeholder="Username" type="text" required>
+                        </div>
+                        <div class="mb-3">
+                            <input class="form-control border-secondary-subtle" name="password" placeholder="Password" type="password" required>
+                        </div>
+                        <button class="btn btn-primary w-100 fw-semibold" type="submit">Ingresar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
