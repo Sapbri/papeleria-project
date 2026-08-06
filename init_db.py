@@ -1,4 +1,5 @@
 import sqlite3
+from werkzeug.security import generate_password_hash
 
 def init_db():
     print("Conectando a la base de datos...")
@@ -10,6 +11,17 @@ def init_db():
 
     print("Ejecutando la creación de tablas")
     conn.executescript(schema)
+
+    # Usuario ADMIN
+    print("Creando usuario administrador inicial...")
+
+    # Creacion de la contraseña por defecto
+    admin_hash = generate_password_hash("admin123")
+    
+    # Insert query
+    conn.execute(
+        "INSERT OR IGNORE INTO users (username, password_hash, role) VALUES (?, ?, ?)", ("admin", admin_hash, "admin")
+        )
 
     conn.commit()
     conn.close()
