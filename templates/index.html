@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Home
+{% endblock %}
+
+{% block main %}
+    <div class="container py-5">
+        <div class="p-5 mb-4 bg-light rounded-3 border border-1 border-secondary text-center shadow-sm">
+            <h1 class="display-5 fw-bold text-primary">¡Bienvenido, {{ session["username"] }}!</h1>
+            <p class="fs-5 text-dark mb-0">
+                Sistema de Gestión para Papelería | Rol: <span class="badge bg-secondary text-uppercase">{{ session ["user_role"] }}</span>
+            </p>
+        </div>
+    </div>
+{% endblock %}
