@@ -1,0 +1,114 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Gestión de Empleados
+{% endblock %}
+
+{% block main %}
+    <div class="container py-4 text-start">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold text-dark mb-0">Gestión de Empleados</h2>
+                <p class="text-muted small mb-0">Administra el personal y sus roles en el sistema</p>
+            </div>
+            <a href="/usuarios/registrar" class="btn btn-primary fw-semibold">
+                <i class="bi bi-person-plus-fill me-1"></i> Registrar Empleado
+            </a>
+        </div>
+
+        <!-- Pestañas para filtrar por Rol -->
+        <ul class="nav nav-tabs mb-3 border-2" id="userTabs" role="tablist" >
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active fw-semibold border-2" id="cajeros-tab" data-bs-toggle="tab" data-bs-target="#cajeros" type="button" role="tab">
+                    Cajeros
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-semibold border-2" id="admins-tab" data-bs-toggle="tab" data-bs-target="#admins" type="button" role="tab">
+                    Administradores
+                </button>
+            </li>
+        </ul>
+
+        <!-- Contenido de las Pestañas -->
+        <div class="tab-content" id="userTabsContent">
+            <!-- Tabla Cajeros -->
+            <div class="tab-pane fade show active" id="cajeros" role="tabpanel">
+                <div class="card border-secondary border-2 shadow-sm rounded-3">
+                    <div class="card-body p-0">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light border-bottom border-2">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Usuario</th>
+                                    <th>Fecha Registro</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in cajeros %}
+                                <tr>
+                                    <td>{{ user.id }}</td>
+                                    <td class="fw-bold">{{ user.username }}</td>
+                                    <td>{{ user.created_at }}</td>
+                                    <td class="text-end">
+                                        <button class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" title="Desactivar acceso">
+                                            <i class="bi bi-person-x"></i>
+                                        </button>                              
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-3 text-muted">No hay cajeros registrados.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla Administradores -->
+            <div class="tab-pane fade" id="admins" role="tabpanel">
+                <div class="card border-secondary border-2 shadow-sm rounded-3">
+                    <div class="card-body p-0">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light border-bottom border-2">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Usuario</th>
+                                    <th>Fecha Registro</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in admins %}
+                                <tr>
+                                    <td>{{ user.id }}</td>
+                                    <td class="fw-bold text-dark">{{ user.username }}</td>
+                                    <td>{{ user.created_at if user.created_at else 'Sin fecha' }}</td>
+                                    <td class="text-end">
+                                        <button class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" title="Desactivar acceso">
+                                            <i class="bi bi-person-x"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-3 text-muted">No hay administradores registrados.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

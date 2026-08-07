@@ -4,7 +4,7 @@ from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 
 import db
-from helpers import apology, login_required
+from helpers import apology, login_required, admin_required
 
 # Configurar app
 app = Flask(__name__)
@@ -133,3 +133,102 @@ def login():
     # El usuario llega por la ruta GET (luego de hacer click en el link o redireccionado)
     else:
         return render_template("login.html")
+
+
+@app.route("/usuarios", methods=["GET"])
+@login_required
+@admin_required
+def users():
+    '''Muestra la lista de empleados divididos por rol'''
+    
+    conexion = db.get_db()
+    
+    # Traemos solo los cajeros
+    cajeros = conexion.execute(
+        "SELECT id, username, created_at FROM users WHERE role = 'cajero'"
+    ).fetchall()
+    
+    # Traemos solo los admins
+    admins = conexion.execute(
+        "SELECT id, username, created_at FROM users WHERE role = 'admin'"
+    ).fetchall()
+    
+    return render_template("users.html", cajeros=cajeros, admins=admins)
+
+
+@app.route("/usuarios/registrar", methods=["GET", "POST"])
+@login_required
+@admin_required
+def registrar_usuario():
+    """Registrar un nuevo empleado en el sistema (Cajero o Administrador)"""
+
+    if request.method == "POST":
+
+        # Extraer la información del formulario
+        username_nuevo_usuario = request.form.get("username_nuevo_usuario")
+        role_nuevo_usuario = request.form.get("role_nuevo_usuario")
+        password_nuevo_usuario = request.form.get("password_nuevo_usuario")
+        confirmation_nuevo_usuario = request.form.get("confirmation_nuevo_usuario")
+
+        # Comprobar campos vacíos o con puros espacios
+        if not username_nuevo_usuario or not username_nuevo_usuario.strip():
+            return apology("Debe ingresar un nombre de usuario", 400)
+
+        if not role_nuevo_usuario or not role_nuevo_usuario.strip():
+            return apology("Debe seleccionar un rol válido para el empleado", 400)
+
+        if not password_nuevo_usuario or not password_nuevo_usuario.strip():
+            return apology("Debe ingresar una contraseña inicial", 400)
+
+        if not confirmation_nuevo_usuario or not confirmation_nuevo_usuario.strip():
+            return apology("Debe confirmar la contraseña", 400)
+
+
+        # Limpiar los espacios de los extremos de los campos despues de validados
+        username_nuevo_usuario = username_nuevo_usuario.strip()    
+        role_nuevo_usuario = role_nuevo_usuario.strip()    
+        password_nuevo_usuario = password_nuevo_usuario.strip()    
+        confirmation_nuevo_usuario = confirmation_nuevo_usuario.strip()    
+
+        # Comprobar que el rol sea exactamente una de las opciones permitidas
+        ROLES_PERMITIDOS = ["cajero", "admin"]
+        if role_nuevo_usuario not in ROLES_PERMITIDOS:
+            return apology("Rol no válido. Seleccione cajero o admin", 400)
+
+        # Comprobar longitud mínima requerida
+        if len(username_nuevo_usuario) < 3:
+            return apology("El nombre de usuario debe tener al menos 3 caracteres", 400)
+
+        if len(password_nuevo_usuario) < 6:
+            return apology("La contraseña debe tener al menos 6 caracteres", 400)
+
+        # Comprobar que la contraseña y su confirmación coincidan
+        if password_nuevo_usuario != confirmation_nuevo_usuario:
+            return apology("Las contraseñas ingresadas no coinciden. Verifique.", 400)
+
+        # Conectar a la BD y verificar que el usuario no exista previamente
+        conexion = db.get_db()
+
+        usuario_existente = conexion.execute(
+            "SELECT id FROM users WHERE username = ?", (username_nuevo_usuario,)
+        ).fetchone()
+
+        if usuario_existente:
+            return apology("El nombre de usuario ya se encuentra registrado. Elija otro.", 400)
+
+        # Generar el hash de la contraseña e insertar el nuevo usuario en la BD
+        hash_password_nuevo_usuario = generate_password_hash(password_nuevo_usuario)
+
+        conexion.execute(
+            "INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)",
+            (username_nuevo_usuario, hash_password_nuevo_usuario, role_nuevo_usuario)
+        )
+
+        # Guardar los cambios permanentemente
+        conexion.commit()
+
+        # Redirigir de vuelta a la lista de usuarios
+        return redirect("/usuarios")
+
+    else:
+        return render_template("register.html")
